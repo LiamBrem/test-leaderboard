@@ -8,6 +8,6 @@ on:
 
 jobs:
   call-leaderboard:
-    uses: pittcsc/.github/workflows/leaderboard-tracking.yml@main
+    uses: pittcsc/workflow/workflows/leaderboard-tracking.yml@main
     with:
       repo: ${{ github.repository }}
