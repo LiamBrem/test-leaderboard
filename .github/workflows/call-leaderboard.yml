@@ -38,3 +38,10 @@ jobs:
               "review_state": "${{ github.event.review.state }}",
               "submitted_at": "${{ github.event.review.submitted_at }}"
             }'
+      - name: Debug secrets
+        run: |
+          echo "API URL length: ${#LEADERBOARD_API_URL}"
+          echo "API KEY length: ${#LEADERBOARD_API_KEY}"
+        env:
+          LEADERBOARD_API_URL: ${{ secrets.LEADERBOARD_API_URL }}
+          LEADERBOARD_API_KEY: ${{ secrets.LEADERBOARD_API_KEY }}
