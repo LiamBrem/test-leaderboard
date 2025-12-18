@@ -1,7 +1,7 @@
 name: Call Leaderboard API
 
 on:
-  pull_request:
+  pull_request_target:
     types: [closed]
   pull_request_review:
     types: [submitted]
@@ -21,7 +21,7 @@ jobs:
           API_KEY: ${{ secrets.LEADERBOARD_API_KEY }}
 
       - name: Handle PR merged
-        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true }}
+        if: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.merged == true }}
         env:
           API_URL: ${{ secrets.LEADERBOARD_API_URL }}
           API_KEY: ${{ secrets.LEADERBOARD_API_KEY }}
