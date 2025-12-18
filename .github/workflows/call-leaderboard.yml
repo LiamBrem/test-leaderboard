@@ -17,7 +17,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.LEADERBOARD_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{
-              "repo": "${{ inputs.repo }}",
+              "repo": "${{ github.repository }}",
               "pr_number": ${{ github.event.pull_request.number }},
               "author": "${{ github.event.pull_request.user.login }}",
               "additions": ${{ github.event.pull_request.additions }},
@@ -32,7 +32,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.LEADERBOARD_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{
-              "repo": "${{ inputs.repo }}",
+              "repo": "${{ github.repository }}",
               "pr_number": ${{ github.event.pull_request.number }},
               "reviewer": "${{ github.event.review.user.login }}",
               "review_state": "${{ github.event.review.state }}",
