@@ -1,19 +1,13 @@
-on:
-  pull_request_target:
-    types: [closed]
-  push:
-    branches: [main]
+name: Call Leaderboard Workflow
 
-permissions:
-  contents: write
-  actions: read
+on:
+  pull_request:
+    types: [closed]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
   call-leaderboard:
-    if: >
-      (github.event_name == 'pull_request_target' && github.event.pull_request.merged == true) ||
-      (github.event_name == 'push')
-    uses: pittcsc/.github/.github/workflows/leaderboard-tracking.yml@main
+    uses: pittcsc/.github/workflows/leaderboard-tracking.yml@main
     with:
       repo: ${{ github.repository }}
-    secrets: inherit
