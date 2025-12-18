@@ -1,4 +1,4 @@
-name: Call Leaderboard Workflow
+name: Call Leaderboard API
 
 on:
   pull_request:
@@ -7,7 +7,34 @@ on:
     types: [submitted]
 
 jobs:
-  call-leaderboard:
-    uses: pittcsc/workflow/workflows/leaderboard-tracking.yml@main
-    with:
-      repo: ${{ github.repository }}
+  track:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Handle PR merged
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true }}
+        run: |
+          curl -sS -X POST ${{ secrets.LEADERBOARD_API_URL }}/events/pr-merged \
+            -H "Authorization: Bearer ${{ secrets.LEADERBOARD_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "repo": "${{ inputs.repo }}",
+              "pr_number": ${{ github.event.pull_request.number }},
+              "author": "${{ github.event.pull_request.user.login }}",
+              "additions": ${{ github.event.pull_request.additions }},
+              "deletions": ${{ github.event.pull_request.deletions }},
+              "merged_at": "${{ github.event.pull_request.merged_at }}"
+            }'
+
+      - name: Handle review submitted
+        if: ${{ github.event_name == 'pull_request_review' }}
+        run: |
+          curl -sS -X POST ${{ secrets.LEADERBOARD_API_URL }}/events/review-submitted \
+            -H "Authorization: Bearer ${{ secrets.LEADERBOARD_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "repo": "${{ inputs.repo }}",
+              "pr_number": ${{ github.event.pull_request.number }},
+              "reviewer": "${{ github.event.review.user.login }}",
+              "review_state": "${{ github.event.review.state }}",
+              "submitted_at": "${{ github.event.review.submitted_at }}"
+            }'
