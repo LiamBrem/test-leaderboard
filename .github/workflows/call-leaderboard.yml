@@ -10,11 +10,24 @@ jobs:
   track:
     runs-on: ubuntu-latest
     steps:
+      - name: Debug secrets
+        run: |
+          echo "API URL is set: ${{ secrets.LEADERBOARD_API_URL != '' }}"
+          echo "API KEY is set: ${{ secrets.LEADERBOARD_API_KEY != '' }}"
+          echo "URL length: ${#API_URL}"
+          echo "KEY length: ${#API_KEY}"
+        env:
+          API_URL: ${{ secrets.LEADERBOARD_API_URL }}
+          API_KEY: ${{ secrets.LEADERBOARD_API_KEY }}
+
       - name: Handle PR merged
         if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true }}
+        env:
+          API_URL: ${{ secrets.LEADERBOARD_API_URL }}
+          API_KEY: ${{ secrets.LEADERBOARD_API_KEY }}
         run: |
-          curl -sS -X POST ${{ secrets.LEADERBOARD_API_URL }}/events/pr-merged \
-            -H "Authorization: Bearer ${{ secrets.LEADERBOARD_API_KEY }}" \
+          curl -sS -X POST "${API_URL}/events/pr-merged" \
+            -H "Authorization: Bearer ${API_KEY}" \
             -H "Content-Type: application/json" \
             -d '{
               "repo": "${{ github.repository }}",
@@ -27,9 +40,12 @@ jobs:
 
       - name: Handle review submitted
         if: ${{ github.event_name == 'pull_request_review' }}
+        env:
+          API_URL: ${{ secrets.LEADERBOARD_API_URL }}
+          API_KEY: ${{ secrets.LEADERBOARD_API_KEY }}
         run: |
-          curl -sS -X POST ${{ secrets.LEADERBOARD_API_URL }}/events/review-submitted \
-            -H "Authorization: Bearer ${{ secrets.LEADERBOARD_API_KEY }}" \
+          curl -sS -X POST "${API_URL}/events/review-submitted" \
+            -H "Authorization: Bearer ${API_KEY}" \
             -H "Content-Type: application/json" \
             -d '{
               "repo": "${{ github.repository }}",
@@ -38,10 +54,3 @@ jobs:
               "review_state": "${{ github.event.review.state }}",
               "submitted_at": "${{ github.event.review.submitted_at }}"
             }'
-      - name: Debug secrets
-        run: |
-          echo "API URL length: ${#LEADERBOARD_API_URL}"
-          echo "API KEY length: ${#LEADERBOARD_API_KEY}"
-        env:
-          LEADERBOARD_API_URL: ${{ secrets.LEADERBOARD_API_URL }}
-          LEADERBOARD_API_KEY: ${{ secrets.LEADERBOARD_API_KEY }}
